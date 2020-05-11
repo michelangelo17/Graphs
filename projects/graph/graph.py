@@ -12,71 +12,125 @@ class Graph:
         self.vertices = {}
 
     def add_vertex(self, vertex_id):
-        """
-        Add a vertex to the graph.
-        """
-        pass  # TODO
+        self.vertices[vertex_id] = set()
 
     def add_edge(self, v1, v2):
-        """
-        Add a directed edge to the graph.
-        """
-        pass  # TODO
+        if v1 in self.vertices and v2 in self.vertices:
+            self.vertices[v1].add(v2)
+        else:
+            print('Vertex not found')
 
     def get_neighbors(self, vertex_id):
-        """
-        Get all neighbors (edges) of a vertex.
-        """
-        pass  # TODO
+        if vertex_id in self.vertices:
+            return self.vertices[vertex_id]
+        else:
+            print('Vertex_id not found')
 
     def bft(self, starting_vertex):
-        """
-        Print each vertex in breadth-first order
-        beginning from starting_vertex.
-        """
-        pass  # TODO
+        todo = Queue()
+        todo.enqueue(starting_vertex)
+        completed = set()
+
+        while todo.size() > 0:
+            cur_vertex = todo.dequeue()
+
+            if cur_vertex not in completed:
+                print(cur_vertex)
+            completed.add(cur_vertex)
+
+            for v in self.vertices[cur_vertex]:
+                if v not in completed:
+                    todo.enqueue(v)
 
     def dft(self, starting_vertex):
-        """
-        Print each vertex in depth-first order
-        beginning from starting_vertex.
-        """
-        pass  # TODO
+        todo = Stack()
+        todo.push(starting_vertex)
+        completed = set()
 
-    def dft_recursive(self, starting_vertex):
-        """
-        Print each vertex in depth-first order
-        beginning from starting_vertex.
+        while todo.size() > 0:
+            cur_vertex = todo.pop()
 
-        This should be done using recursion.
-        """
-        pass  # TODO
+            if cur_vertex not in completed:
+                print(cur_vertex)
+                completed.add(cur_vertex)
+
+            for v in self.vertices[cur_vertex]:
+                if v not in completed:
+                    todo.push(v)
+
+    def dft_recursive(self, starting_vertex, completed=set()):
+        if starting_vertex in completed:
+            return
+
+        completed.add(starting_vertex)
+        print(starting_vertex)
+
+        for v in self.vertices[starting_vertex]:
+            self.dft_recursive(v)
 
     def bfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing the shortest path from
-        starting_vertex to destination_vertex in
-        breath-first order.
-        """
-        pass  # TODO
+        todo = Queue()
+        todo.enqueue([starting_vertex])
+        completed = set()
+
+        while todo.size() > 0:
+            path = todo.dequeue()
+            cur_vertex = path[-1]
+
+            if cur_vertex not in completed:
+                if path[0] == starting_vertex and cur_vertex == destination_vertex:
+                    return path
+                completed.add(cur_vertex)
+
+                for v in self.vertices[cur_vertex]:
+                    new_path = list(path)
+                    new_path.append(v)
+                    todo.enqueue(new_path)
 
     def dfs(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
-        """
-        pass  # TODO
+        todo = Stack()
+        todo.push([starting_vertex])
+        completed = set()
 
-    def dfs_recursive(self, starting_vertex, destination_vertex):
-        """
-        Return a list containing a path from
-        starting_vertex to destination_vertex in
-        depth-first order.
+        while todo.size() > 0:
+            path = todo.pop()
+            cur_vertex = path[-1]
 
-        This should be done using recursion.
-        """
-        pass  # TODO
+            if cur_vertex not in completed:
+                if path[0] == starting_vertex and cur_vertex == destination_vertex:
+                    return path
+                completed.add(cur_vertex)
+
+                for v in self.vertices[cur_vertex]:
+                    new_path = list(path)
+                    new_path.append(v)
+                    todo.push(new_path)
+
+    def dfs_recursive(self, starting_vertex, destination_vertex, path=[]):
+        result = None
+
+        if len(path) == 0:
+            path.append(starting_vertex)
+
+        if path[0] == starting_vertex and path[-1] == destination_vertex:
+            return path
+
+        next_vertex = path[-1]
+
+        for v in self.vertices[next_vertex]:
+            if v not in path:
+                new_path = list(path)
+                new_path.append(v)
+
+                found = self.dfs_recursive(
+                    starting_vertex, destination_vertex, new_path)
+
+                if not result:
+                    result = found
+                elif len(result) > len(found):
+                    result = found
+
+        return result
 
 
 if __name__ == '__main__':
@@ -104,7 +158,8 @@ if __name__ == '__main__':
     Should print:
         {1: {2}, 2: {3, 4}, 3: {5}, 4: {6, 7}, 5: {3}, 6: {3}, 7: {1, 6}}
     '''
-    print(graph.vertices)
+    # print(graph.vertices)
+    # print(graph.get_neighbors(3))
 
     '''
     Valid BFT paths:
@@ -121,7 +176,7 @@ if __name__ == '__main__':
         1, 2, 4, 3, 7, 6, 5
         1, 2, 4, 3, 7, 5, 6
     '''
-    graph.bft(1)
+    # graph.bft(1)
 
     '''
     Valid DFT paths:
@@ -130,19 +185,19 @@ if __name__ == '__main__':
         1, 2, 4, 7, 6, 3, 5
         1, 2, 4, 6, 3, 5, 7
     '''
-    graph.dft(1)
-    graph.dft_recursive(1)
+    # graph.dft(1)
+    # graph.dft_recursive(1)
 
     '''
     Valid BFS path:
         [1, 2, 4, 6]
     '''
-    print(graph.bfs(1, 6))
+    # print(graph.bfs(1, 6))
 
     '''
     Valid DFS paths:
         [1, 2, 4, 6]
         [1, 2, 4, 7, 6]
     '''
-    print(graph.dfs(1, 6))
+    # print(graph.dfs(1, 6))
     print(graph.dfs_recursive(1, 6))
