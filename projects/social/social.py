@@ -1,6 +1,11 @@
+import random
+import statistics
+
+
 class User:
     def __init__(self, name):
         self.name = name
+
 
 class SocialGraph:
     def __init__(self):
@@ -38,15 +43,28 @@ class SocialGraph:
 
         The number of users must be greater than the average number of friendships.
         """
-        # Reset graph
         self.last_id = 0
         self.users = {}
         self.friendships = {}
-        # !!!! IMPLEMENT ME
 
-        # Add users
+        if avg_friendships > num_users:
+            return print('Average must be lower than number of users')
 
-        # Create friendships
+        for i in range(num_users):
+            self.add_user(f'user_{i+1}')
+
+        possible_friends = []
+
+        for user in self.users:
+            for user2 in self.users:
+                if user < user2:
+                    possible_friends.append((user, user2))
+
+        random.shuffle(possible_friends)
+        friend_total = avg_friendships * (num_users // 2)
+
+        for i in range(friend_total):
+            self.add_friendship(possible_friends[i][0], possible_friends[i][1])
 
     def get_all_social_paths(self, user_id):
         """
@@ -58,7 +76,18 @@ class SocialGraph:
         The key is the friend's ID and the value is the path.
         """
         visited = {}  # Note that this is a dictionary, not a set
-        # !!!! IMPLEMENT ME
+        queue = [[user_id]]
+        while len(queue) > 0:
+            path = queue.pop(0)
+            cur_user = path[-1]
+            if cur_user not in visited:
+                visited[cur_user] = path
+
+                for user in self.friendships[cur_user]:
+                    new_path = list(path)
+                    new_path.append(user)
+                    queue.append(new_path)
+
         return visited
 
 
@@ -67,4 +96,12 @@ if __name__ == '__main__':
     sg.populate_graph(10, 2)
     print(sg.friendships)
     connections = sg.get_all_social_paths(1)
+    total = 0
+    lengths = []
+    for connect in connections.keys():
+        total += 1
+        lengths.append(len(connections[connect]))
+
     print(connections)
+    print(total)
+    print(statistics.mean(lengths))
