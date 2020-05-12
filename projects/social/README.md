@@ -57,8 +57,10 @@ Note that in this sample, Users 3, 4 and 9 are not in User 1's extended social n
 
 1. You might have found the results from question #2 above to be surprising. Would you expect results like this in real life? If not, what are some ways you could improve your friendship distribution model for more realistic results?
 
-Actually, I would. The way they're calculating connections is basically six degrees of kevin bacon. You can't even get too far removed from yourself if you go by blood connections, with a network of friends on a social network it's pretty likely.
-
-But if we wanted to make it even more random we could randomise whether a connection is even on the list of possible connections before that list is randomised. Even just throw in a 50/50 chance that a pair doesn't get added to list of connections.
+Actually, I would. The way they're calculating connections is basically six degrees of seperation. You can't even get too far removed from yourself if you go by blood connections, with a network of friends on a social network it's pretty much always going to end up close to 100% if you do around 5-7 connections each. There are ways we could change the results to be more clustered, but the average results would probably be the same unless we artificially introduced seperation between clusters.
 
 2. If you followed the hints for part 1, your `populate_graph()` will run in O(n^2) time. Refactor your code to run in O(n) time. Are there any tradeoffs that come with this implementation?
+
+Works pretty much exactly the same, down to the same results for question 2 above. The potential draw back is that it's not so much O(n) as it seems since it will loop until a unique list of pairs as long as n is created, which may in fact take much longer than n in the worst case since it relies on a psudeo random number generator to create the pairs. So technically, going by worst case, it could go on many times n.
+
+However, it's also making a much shorter list, since we're not creating every combination, but only as many as needed to match the average, which means realistically, it likely will be faster most of the time and it will always have a high chance of landing on a usuable pair. We also don't need to shuffle the list since the pairs are already randomised.

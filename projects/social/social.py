@@ -55,16 +55,24 @@ class SocialGraph:
 
         possible_friends = []
 
-        for user in self.users:
-            for user2 in self.users:
-                if user < user2:
-                    possible_friends.append((user, user2))
-
-        random.shuffle(possible_friends)
         friend_total = avg_friendships * (num_users // 2)
 
-        for i in range(friend_total):
-            self.add_friendship(possible_friends[i][0], possible_friends[i][1])
+        while len(possible_friends) < friend_total:
+            user = random.randint(1, num_users)
+            friend = random.randint(1, num_users)
+            if user < friend and (user, friend) not in possible_friends:
+                possible_friends.append((user, friend))
+
+        for friend in possible_friends:
+            self.add_friendship(friend[0], friend[1])
+
+         # Booo n^2
+        # for user in self.users:
+        #     for user2 in self.users:
+        #         if user < user2:
+        #             possible_friends.append((user, user2))
+
+        # random.shuffle(possible_friends)
 
     def get_all_social_paths(self, user_id):
         """
@@ -77,9 +85,11 @@ class SocialGraph:
         """
         visited = {}  # Note that this is a dictionary, not a set
         queue = [[user_id]]
+
         while len(queue) > 0:
             path = queue.pop(0)
             cur_user = path[-1]
+
             if cur_user not in visited:
                 visited[cur_user] = path
 
@@ -93,8 +103,8 @@ class SocialGraph:
 
 if __name__ == '__main__':
     sg = SocialGraph()
-    sg.populate_graph(10, 2)
-    print(sg.friendships)
+    sg.populate_graph(10000, 5)
+    # print(sg.friendships)
     connections = sg.get_all_social_paths(1)
     total = 0
     lengths = []
@@ -102,6 +112,6 @@ if __name__ == '__main__':
         total += 1
         lengths.append(len(connections[connect]))
 
-    print(connections)
+    # print(connections)
     print(total)
     print(statistics.mean(lengths))
