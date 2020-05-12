@@ -58,7 +58,10 @@ class Graph:
                 if v not in completed:
                     todo.push(v)
 
-    def dft_recursive(self, starting_vertex, completed=set()):
+    def dft_recursive(self, starting_vertex, completed=None):
+        if not completed:
+            completed = set()
+
         if starting_vertex in completed:
             return
 
@@ -66,7 +69,7 @@ class Graph:
         print(starting_vertex)
 
         for v in self.vertices[starting_vertex]:
-            self.dft_recursive(v)
+            self.dft_recursive(v, completed)
 
     def bfs(self, starting_vertex, destination_vertex):
         todo = Queue()
@@ -106,18 +109,21 @@ class Graph:
                     new_path.append(v)
                     todo.push(new_path)
 
-    def dfs_recursive(self, starting_vertex, destination_vertex, path=[]):
+    def dfs_recursive(self, starting_vertex, destination_vertex, path=None):
         result = None
+
+        if not path:
+            path = []
 
         if len(path) == 0:
             path.append(starting_vertex)
 
-        if path[0] == starting_vertex and path[-1] == destination_vertex:
+        cur_vertex = path[-1]
+
+        if cur_vertex == destination_vertex:
             return path
 
-        next_vertex = path[-1]
-
-        for v in self.vertices[next_vertex]:
+        for v in self.vertices[cur_vertex]:
             if v not in path:
                 new_path = list(path)
                 new_path.append(v)
@@ -187,6 +193,7 @@ if __name__ == '__main__':
     '''
     # graph.dft(1)
     # graph.dft_recursive(1)
+    # graph.dft_recursive(2)
 
     '''
     Valid BFS path:
@@ -200,4 +207,4 @@ if __name__ == '__main__':
         [1, 2, 4, 7, 6]
     '''
     # print(graph.dfs(1, 6))
-    print(graph.dfs_recursive(1, 6))
+    # print(graph.dfs_recursive(1, 6))
